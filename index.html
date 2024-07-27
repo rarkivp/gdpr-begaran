@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDPR Begäran om Radering</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button.transparent {
+            background-color: transparent;
+            color: transparent;
+            border: 1px solid transparent;
+            cursor: default;
+        }
+        #result {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        .checkbox-group {
+            margin-bottom: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-group input {
+            margin-right: 10px;
+        }
+        #idAttachment {
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GDPR Begäran om Radering</h1>
+    <form id="gdprForm">
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="site" value="Ratsit" data-email="info@ratsit.se"> Ratsit</label>
+            <label><input type="checkbox" name="site" value="Eniro" data-email="support@eniro.com"> Eniro</label>
+            <label><input type="checkbox" name="site" value="Hitta.se" data-email="support@hitta.se"> Hitta.se</label>
+            <label><input type="checkbox" name="site" value="Lexbase" data-email="support@lexbase.se"> Lexbase</label>
+            <label><input type="checkbox" name="site" value="Birthday.se" data-email="support@birthday.se"> Birthday.se</label>
+            <label><input type="checkbox" name="site" value="Me koll" data-email="support@mrkoll.se"> Mr koll.se</label>
+        </div>
+
+        <label for="name">Namn:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="address">Adress:</label>
+        <input type="text" id="address" name="address" required>
+
+        <label for="email">E-post:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="idAttachment">Bifoga ID:</label>
+        <input type="file" id="idAttachment" name="idAttachment" accept="image/*, .pdf" required>
+
+        <button type="button" onclick="generateLetter()">Generera Brev</button>
+        <button type="button" id="sendEmailButton" class="transparent" onclick="sendEmails()" disabled>Skicka E-post</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function generateLetter() {
+            const checkboxes = document.querySelectorAll('input[name="site"]:checked');
+            const sites = Array.from(checkboxes).map(checkbox => checkbox.value).join(', ');
+            const name = document.getElementById('name').value;
+            const address = document.getElementById('address').value;
+            const email = document.getElementById('email').value;
+
+            const letter = `Till ${sites},
+
+Jag önskar härmed begära radering av alla personuppgifter som ni behandlar om mig, enligt min rätt enligt artikel 17 i den allmänna dataskyddsförordningen (GDPR).
+
+Mina kontaktuppgifter är som följer:
+
+- Namn: ${name}
+- Adress: ${address}
+- E-post: ${email}
+
+Skäl för min begäran:
+
+- Uppgifterna är inte längre nödvändiga för de ändamål de samlades in eller behandlades för.
+- Jag återkallar mitt samtycke till att ni behandlar mina personuppgifter och det finns ingen annan rättslig grund för behandlingen.
+- Jag invänder mot behandlingen och det finns inga övervägande legitima skäl för behandlingen.
+- Uppgifterna har behandlats olagligt.
+- Uppgifterna måste raderas för att uppfylla en rättslig förpliktelse.
+
+Jag ber er att bekräfta mottagandet av denna begäran och att informera mig om de åtgärder ni vidtar inom en rimlig tidsram, i enlighet med GDPR. Om ni har några frågor eller behöver ytterligare information från mig, vänligen kontakta mig på ${email}.
+
+Tack på förhand för er hjälp.
+
+Med vänlig hälsning,
+
+${name}`;
+
+            document.getElementById('result').textContent = letter;
+
+            const sendEmailButton = document.getElementById('sendEmailButton');
+            sendEmailButton.classList.remove('transparent');
+            sendEmailButton.disabled = false;
+        }
+
+        function sendEmails() {
+            const checkboxes = document.querySelectorAll('input[name="site"]:checked');
+            const name = document.getElementById('name').value;
+            const address = document.getElementById('address').value;
+            const email = document.getElementById('email').value;
+            const attachment = document.getElementById('idAttachment').files[0];
+
+            if (attachment) {
+                alert("Vänligen bifoga ditt ID manuellt till varje e-postmeddelande.");
+            }
+
+            checkboxes.forEach(checkbox => {
+                const siteName = checkbox.value;
+                const siteEmail = checkbox.getAttribute('data-email');
+                const subject = 'Begäran om radering av personuppgifter';
+                const body = `Till ${siteName},
+
+Jag önskar härmed begära radering av alla personuppgifter som ni behandlar om mig, enligt min rätt enligt artikel 17 i den allmänna dataskyddsförordningen (GDPR).
+
+Mina kontaktuppgifter är som följer:
+
+- Namn: ${name}
+- Adress: ${address}
+- E-post: ${email}
+
+Skäl för min begäran:
+
+- Uppgifterna är inte längre nödvändiga för de ändamål de samlades in eller behandlades för.
+- Jag återkallar mitt samtycke till att ni behandlar mina personuppgifter och det finns ingen annan rättslig grund för behandlingen.
+- Jag invänder mot behandlingen och det finns inga övervägande legitima skäl för behandlingen.
+- Uppgifterna har behandlats olagligt.
+- Uppgifterna måste raderas för att uppfylla en rättslig förpliktelse.
+
+Jag ber er att bekräfta mottagandet av denna begäran och att informera mig om de åtgärder ni vidtar inom en rimlig tidsram, i enlighet med GDPR. Om ni har några frågor eller behöver ytterligare information från mig, vänligen kontakta mig på ${email}.
+
+Tack på förhand för er hjälp.
+
+Med vänlig hälsning,
+
+${name}`;
+
+                const mailtoLink = `mailto:${siteEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoLink;
+            });
+        }
+    </script>
+</body>
+</html>
